@@ -19,7 +19,7 @@ First microservices architecture application for AI backend API
 
 (choose one for every technology)
 
-## How to start projects
+## How to run projects
 TODO
 
 ## Download links
