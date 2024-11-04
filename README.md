@@ -19,6 +19,10 @@ First microservices architecture application for AI backend API
 
 (choose one for every technology)
 
+##Features
+- [ ] Add to docker-compose file line for build every app before staring
+- [ ] Add condition for main container to run after RabbitMQ fully started
+
 ## How to run projects
 TODO
 

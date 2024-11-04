@@ -54,7 +54,8 @@ public class MessageSenderService {
             try
             {
                 System.out.println("Connecting to 172.18.0.2:5672");
-                connect("172.18.0.2", 5672);
+//                connect("172.18.0.2", 5672);
+                connect("localhost", 5672);
             }
             catch (RuntimeException e)
             {
