@@ -27,22 +27,21 @@ First microservices architecture application for AI backend API
 ### Creating JAR file
 First of all you must to create JAR file for main application(API service)
 
-1.1 Using Intellij IDEA
+1. Using Intellij IDEA
+* Open project folder
+* Open Maven tools window(View -> Tool Windows -> Maven)
+* Double click on 'package'
 
-    * Open project folder
-    * Open Maven tools window(View -> Tool Windows -> Maven)
-    * Double click on 'package'
-1.2 Using terminal
-
-    * Open terminal in main project folder($project-path/backend/main)
-    * Type ```mvn package```
+2. Using terminal
+* Open terminal in main project folder($project-path/main)
+* Type ```mvn package```
 
 ### Start project
 After that, you finaly can start project
 
-* Open terminal in backend directory($project-path/backend)
-* Type in terminal
-    ```docker compose up```
+* Open terminal in backend directory($project-path)
+* Type ```docker compose up```
+
 First time it may takes a litle time to start
 
 ## Download links
