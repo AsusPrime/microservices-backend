@@ -25,5 +25,5 @@ replay_pid*
 
 main/target
 main/out
-main/.idea
+*/.idea
 .DS_Store
