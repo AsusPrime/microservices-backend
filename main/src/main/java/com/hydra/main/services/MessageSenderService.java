@@ -4,6 +4,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,13 +19,17 @@ public class MessageSenderService {
     private Connection connection;
     private Channel channel;
 
+    @Value("${main.rabbitmq_host}")
+    private String rabbiMQ_Host;
+
     public MessageSenderService()
     {
+        System.out.println(rabbiMQ_Host);
         factory = new ConnectionFactory();
 
         try
         {
-            connect("localhost", 5672);
+            connect(rabbiMQ_Host, 5672);
         }
         catch (RuntimeException e)
         {
@@ -53,9 +58,8 @@ public class MessageSenderService {
         {
             try
             {
-                System.out.println("Connecting to 172.18.0.2:5672");
-//                connect("172.18.0.2", 5672);
-                connect("localhost", 5672);
+                System.out.println("Connecting to " + rabbiMQ_Host);
+                connect(rabbiMQ_Host, 5672);
             }
             catch (RuntimeException e)
             {
