@@ -40,7 +40,7 @@ First of all you must to create JAR file for main application(API service)
 After that, you finaly can start project
 
 * Open terminal in backend directory($project-path)
-* Type ```docker compose up```
+* Type ```docker compose up --build```
 
 First time it may takes a litle time to start
 

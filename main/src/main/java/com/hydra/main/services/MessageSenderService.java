@@ -4,6 +4,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
+import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ public class MessageSenderService {
         System.out.println(rabbiMQ_Host);
         factory = new ConnectionFactory();
 
+        System.out.println("Connecting to RabbitMQ...");
         try
         {
             connect(rabbiMQ_Host, 5672);
@@ -51,6 +53,16 @@ public class MessageSenderService {
         } catch (TimeoutException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @PreDestroy
+    public void closeConnection() throws IOException, TimeoutException {
+        System.out.println("Checking connection...");
+        if(channel == null) return;
+
+        System.out.println("Closing connection...");
+        connection.close();
+        channel.close();
     }
 
     public boolean sendMessage(String message) throws IOException {
