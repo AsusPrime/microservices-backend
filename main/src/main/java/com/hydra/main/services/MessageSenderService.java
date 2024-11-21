@@ -25,17 +25,15 @@ public class MessageSenderService {
 
     public MessageSenderService()
     {
-        System.out.println(rabbiMQ_Host);
         factory = new ConnectionFactory();
 
-        System.out.println("Connecting to RabbitMQ...");
         try
         {
             connect(rabbiMQ_Host, 5672);
         }
         catch (RuntimeException e)
         {
-            System.out.println("Error connection...");
+            System.out.println(e.getMessage());
         }
     }
 
@@ -46,8 +44,13 @@ public class MessageSenderService {
 
         try
         {
+            System.out.println("Connecting to " + host + ":" + port + "...");
             connection = factory.newConnection();
             channel = connection.createChannel();
+
+            //create new queue or do nothing if it exists
+            boolean durable = true;//the queue will survive a RabbitMQ node restart
+            channel.queueDeclare(QUEUE_NAME, durable, false, false, null);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
@@ -70,18 +73,14 @@ public class MessageSenderService {
         {
             try
             {
-                System.out.println("Connecting to " + rabbiMQ_Host);
                 connect(rabbiMQ_Host, 5672);
             }
             catch (RuntimeException e)
             {
-                System.out.println("Error connection...");
                 System.out.println(e.getMessage());
                 return false;
             }
         }
-        boolean durable = true;//the queue will survive a RabbitMQ node restart
-        channel.queueDeclare(QUEUE_NAME, durable, false, false, null);
 
         //MessageProperties.PERSISTENT_TEXT_PLAIN - mark messages as persistent
         channel.basicPublish("", QUEUE_NAME,

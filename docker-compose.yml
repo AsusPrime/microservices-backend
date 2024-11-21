@@ -18,6 +18,16 @@ services:
     environment:
       - RABBITMQ_HOST=rabbitmq
 
+  mail:
+    image: mail:latest
+    build:
+      context: ./mail
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+
 
 volumes:
   rabbitmq_data:
