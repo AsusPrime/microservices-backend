@@ -12,6 +12,7 @@ First microservices architecture application for AI backend API
 - MongoDB
 - MySQL/Firebase
 - RabbitMQ
+- NGINX
 - JWT/OAuth 2.0/TLS/API Authorization
 - AWS/Azure/GCP/Linode/Digital Ocean (for cloud providing)
 - Graphana/Kibana/Prometheus (for monitoring)
