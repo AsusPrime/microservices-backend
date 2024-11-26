@@ -49,7 +49,7 @@ public class MessageSenderService {
             channel = connection.createChannel();
 
             //create new queue or do nothing if it exists
-            boolean durable = true;//the queue will survive a RabbitMQ node restart
+            boolean durable = true;//the queue(and messages inside) will survive a RabbitMQ restart
             channel.queueDeclare(QUEUE_NAME, durable, false, false, null);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -84,7 +84,7 @@ public class MessageSenderService {
 
         //MessageProperties.PERSISTENT_TEXT_PLAIN - mark messages as persistent
         channel.basicPublish("", QUEUE_NAME,
-                MessageProperties.PERSISTENT_TEXT_PLAIN,
+                MessageProperties.PERSISTENT_TEXT_PLAIN, // our message now will be persistent
                 message.getBytes(StandardCharsets.UTF_8));
         System.out.println(" [x] Sent '" + message + "'");
 

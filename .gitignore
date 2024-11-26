@@ -28,4 +28,5 @@ main/out
 */.idea
 .DS_Store
 .env
-mail_service
+logs
+__pycache__

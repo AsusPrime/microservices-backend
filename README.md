@@ -17,6 +17,7 @@ First microservices architecture application for AI backend API
 - AWS/Azure/GCP/Linode/Digital Ocean (for cloud providing)
 - Graphana/Kibana/Prometheus (for monitoring)
 - Jenkins/Gitlab
+- NGINX
 
 (choose one for every technology)
 

@@ -25,9 +25,16 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - rabbitmq
+      - main
     environment:
       - RABBITMQ_HOST=rabbitmq
+      - QUEUE_NAME=main # change for any queue you need
+      - LOG_FILENAME=/app/logs/mail_serice.log
+    volumes:
+      - ./logs:/app/logs
 
 
 volumes:
   rabbitmq_data:
+
+# TODO: check if mail service volume work correctly
