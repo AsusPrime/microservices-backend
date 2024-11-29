@@ -5,6 +5,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
 import jakarta.annotation.PreDestroy;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -68,7 +69,7 @@ public class MessageSenderService {
         channel.close();
     }
 
-    public boolean sendMessage(String message) throws IOException {
+    public boolean sendMessage(JSONObject message) throws IOException {
         if(channel == null)
         {
             try
@@ -85,8 +86,7 @@ public class MessageSenderService {
         //MessageProperties.PERSISTENT_TEXT_PLAIN - mark messages as persistent
         channel.basicPublish("", QUEUE_NAME,
                 MessageProperties.PERSISTENT_TEXT_PLAIN, // our message now will be persistent
-                message.getBytes(StandardCharsets.UTF_8));
-        System.out.println(" [x] Sent '" + message + "'");
+                message.toString().getBytes(StandardCharsets.UTF_8));
 
         return true;
     }

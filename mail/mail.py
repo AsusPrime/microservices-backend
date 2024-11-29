@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import smtplib
 from email.mime.text import MIMEText
 import time
+import json
 
 from mail_loggin import config_logger
 
@@ -53,9 +54,12 @@ def connect(host):
     lgr.info(f'Successfully connected to {host}')
     return channel
 
-def callback(ch, method, properties, body):
+def callback(ch, method, properties, message):
+
+    message_json = json.loads(message)
+
     lgr.info('Processing a new message from queue')
-    send('subject', body, SENDER, PASSWORD, SENDER)
+    send(message_json['Subject'], message_json['Body'], SENDER, PASSWORD, message_json['To'])
     lgr.debug('Confirming successfully sended message to RabbitMQ')
     ch.basic_ack(delivery_tag = method.delivery_tag)
 
@@ -90,9 +94,4 @@ if __name__ == '__main__':
 # !1. Передавати через rabbitmq не просто повідомлення а і все інше(заголовок, тема...)
 # !2. це всьо нада буде парсити, якщо не найдеться рішення як це передавати по окремості
 
-# 3. вибір режиму(не завжди нам потрібно нажсилати просто текстові сповіщення, а і html сторінки і тд)
-# 4. тоже нада це парсити якось
-
-# ?5. TODO: TelegramHandler
-
-# 6. Сервіс повинен працювати автономно від інших сервісів, тому тут не має бути функцій заточених під основну програму
+# ?3. TODO: RabbitMQHandler - handler який буде відправляти логи через брокер RabbitMQ до тг бота
