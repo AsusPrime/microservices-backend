@@ -5,6 +5,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
 import jakarta.annotation.PreDestroy;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,17 +26,15 @@ public class MessageSenderService {
 
     public MessageSenderService()
     {
-        System.out.println(rabbiMQ_Host);
         factory = new ConnectionFactory();
 
-        System.out.println("Connecting to RabbitMQ...");
         try
         {
             connect(rabbiMQ_Host, 5672);
         }
         catch (RuntimeException e)
         {
-            System.out.println("Error connection...");
+            System.out.println(e.getMessage());
         }
     }
 
@@ -46,8 +45,13 @@ public class MessageSenderService {
 
         try
         {
+            System.out.println("Connecting to " + host + ":" + port + "...");
             connection = factory.newConnection();
             channel = connection.createChannel();
+
+            //create new queue or do nothing if it exists
+            boolean durable = true;//the queue(and messages inside) will survive a RabbitMQ restart
+            channel.queueDeclare(QUEUE_NAME, durable, false, false, null);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
@@ -65,29 +69,24 @@ public class MessageSenderService {
         channel.close();
     }
 
-    public boolean sendMessage(String message) throws IOException {
+    public boolean sendMessage(JSONObject message) throws IOException {
         if(channel == null)
         {
             try
             {
-                System.out.println("Connecting to " + rabbiMQ_Host);
                 connect(rabbiMQ_Host, 5672);
             }
             catch (RuntimeException e)
             {
-                System.out.println("Error connection...");
                 System.out.println(e.getMessage());
                 return false;
             }
         }
-        boolean durable = true;//the queue will survive a RabbitMQ node restart
-        channel.queueDeclare(QUEUE_NAME, durable, false, false, null);
 
         //MessageProperties.PERSISTENT_TEXT_PLAIN - mark messages as persistent
         channel.basicPublish("", QUEUE_NAME,
-                MessageProperties.PERSISTENT_TEXT_PLAIN,
-                message.getBytes(StandardCharsets.UTF_8));
-        System.out.println(" [x] Sent '" + message + "'");
+                MessageProperties.PERSISTENT_TEXT_PLAIN, // our message now will be persistent
+                message.toString().getBytes(StandardCharsets.UTF_8));
 
         return true;
     }

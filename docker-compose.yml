@@ -17,7 +17,33 @@ services:
       - rabbitmq
     environment:
       - RABBITMQ_HOST=rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mail:
+    image: mail:latest
+    build:
+      context: ./mail
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+      - main
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - QUEUE_NAME=main # change for any queue you need
+      - LOG_FILENAME=/app/logs/mail_serice.log
+    volumes:
+      - logs:/app/logs
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 
 volumes:
   rabbitmq_data:
+  logs:

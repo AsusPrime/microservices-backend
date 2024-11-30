@@ -27,3 +27,6 @@ main/target
 main/out
 */.idea
 .DS_Store
+.env
+logs
+__pycache__

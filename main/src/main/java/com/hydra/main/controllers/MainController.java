@@ -1,6 +1,7 @@
 package com.hydra.main.controllers;
 
 import com.hydra.main.services.MessageSenderService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +23,8 @@ import java.util.Map;
 @RequestMapping(value = "/test")
 public class MainController {
     private final MessageSenderService messageSenderService;
+    private final String subject = "Example of subject";
+    private final String body = "Example of body";
 
     public MainController(MessageSenderService messageSenderService)
     {
@@ -46,12 +49,17 @@ public class MainController {
                     .body(Map.of("status", "bad request", "message", "missing email or link"));
         }
 
+        JSONObject message = new JSONObject();
+        message.put("To", email);
+        message.put("Subject", subject);
+        message.put("Body", body);
+
         //send data into process function
         //TODO:
         //* if unable send message don't add photo to the DB
         // make this function 'transactional'!!!
         try {
-            if(!messageSenderService.sendMessage("message from " + email)){
+            if(!messageSenderService.sendMessage(message)){
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(Map.of("status", "server error", "message", "Unable to send message! Try again later"));
             }
