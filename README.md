@@ -37,9 +37,9 @@ First of all you must to create JAR file for main application(API service)
 * Type ```mvn package```
 
 ### Configuring mail service
-For the mail service to work correctly, you need to create a .env file with authorization data
-But before this, you must configure your email account:
-for more information visit this site:
+For the mail service to work correctly, you need to create a .env file with authorization data. But before this, you must configure your email account
+
+For more information visit this site:
 (link)
 
 1. Create .env file in mail service directory($project-path/mail)
