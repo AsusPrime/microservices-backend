@@ -17,6 +17,11 @@ services:
       - rabbitmq
     environment:
       - RABBITMQ_HOST=rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   mail:
     image: mail:latest
@@ -31,10 +36,14 @@ services:
       - QUEUE_NAME=main # change for any queue you need
       - LOG_FILENAME=/app/logs/mail_serice.log
     volumes:
-      - ./logs:/app/logs
+      - logs:/app/logs
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 
 volumes:
   rabbitmq_data:
-
-# TODO: check if mail service volume work correctly
+  logs:

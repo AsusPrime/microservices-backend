@@ -4,10 +4,10 @@ import pika
 from dotenv import load_dotenv
 import smtplib
 from email.mime.text import MIMEText
-import time
+from time import sleep
 import json
 
-from mail_loggin import config_logger
+from loggin.mail_loggin import config_logger
 
 load_dotenv()
 
@@ -17,10 +17,10 @@ RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")
 QUEUE_NAME = os.getenv("QUEUE_NAME", "main")
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
-LOG_HANDLERS = os.getenv("LOG_HANDLERS", ['file_handler', 'console_handler'])
+LOG_HANDLERS = os.getenv("LOG_HANDLERS", ['file_handler', 'console_handler', 'rabbitmq_handler'])
 LOG_FILENAME = os.getenv("LOG_FILENAME", 'logs/logs.log')
 
-lgr = config_logger(LOG_LEVEL, LOG_HANDLERS, LOG_FILENAME)
+lgr = config_logger(LOG_LEVEL, LOG_HANDLERS, LOG_FILENAME, RABBITMQ_HOST)
 
 def send(subject, body, sender, password, recipient):
     lgr.debug(f'Sending mail to {recipient}')
@@ -69,7 +69,7 @@ def main(rabbitmq_host, queue_name, callback):
         
         if channel != None:
             break
-        time.sleep(5)
+        sleep(5)
 
     lgr.debug('Decalrating queue')
     channel.queue_declare(queue=queue_name, durable=True)
@@ -82,16 +82,5 @@ def main(rabbitmq_host, queue_name, callback):
     channel.start_consuming()
 
 
-
 if __name__ == '__main__':
     main(RABBITMQ_HOST, QUEUE_NAME, callback=callback)
-
-
-
-
-
-
-# !1. Передавати через rabbitmq не просто повідомлення а і все інше(заголовок, тема...)
-# !2. це всьо нада буде парсити, якщо не найдеться рішення як це передавати по окремості
-
-# ?3. TODO: RabbitMQHandler - handler який буде відправляти логи через брокер RabbitMQ до тг бота

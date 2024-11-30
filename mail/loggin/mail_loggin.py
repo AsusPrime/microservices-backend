@@ -1,7 +1,11 @@
 import logging.config
 import os
+from loggin.rabbitmq_handler import RabbitMQHandler
 
-def config_logger(level='INFO', handlers=['file_handler', 'console_handler'], filename='logs/logs.log'):
+def config_logger(level='INFO',
+                  handlers=['file_handler', 'console_handler', 'rabbitmq_handler'],
+                  filename='logs/logs.log',
+                  host='localhost'):
     log_dir = os.path.dirname(filename)
     if log_dir and not os.path.exists(log_dir):
         os.makedirs(log_dir)
@@ -29,8 +33,14 @@ def config_logger(level='INFO', handlers=['file_handler', 'console_handler'], fi
                 'class': 'logging.StreamHandler',
                 'level': 'DEBUG',
                 'formatter': 'std_format'
+            },
+
+            'rabbitmq_handler': {
+                '()': RabbitMQHandler,
+                'host': host,
+                'level': 'DEBUG',
+                'formatter': 'std_format'
             }
-            # 'telegram_handler' {}
         },
         
         'loggers': {
