@@ -23,6 +23,7 @@ TODO:
 (choose one for every technology)
 
 ## Features
+TODO
 
 ## How to run projects
 ### Creating JAR file(main service)
