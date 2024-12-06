@@ -8,9 +8,13 @@ First microservices architecture application for AI backend API
 - Docker
 - python logging
 - RabbitMQ
+- SMTP
 
 TODO:
 - Kubernetes
+- Fast API
+- AI
+- Python Telegram bot
 - Log4j
 - MongoDB
 - NGINX
