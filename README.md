@@ -6,12 +6,18 @@ First microservices architecture application for AI backend API
 - Spring Boot
 - Python
 - Docker
-- Kubernetes
-- Log4j
 - python logging
-- MongoDB
-- MySQL/Firebase
 - RabbitMQ
+- SMTP
+- Firebase
+
+TODO:
+- Kubernetes
+- Fast API
+- AI
+- Python Telegram bot
+- Log4j
+- MongoDB
 - NGINX
 - JWT/OAuth 2.0/TLS/API Authorization
 - AWS/Azure/GCP/Linode/Digital Ocean (for cloud providing)
@@ -22,6 +28,7 @@ First microservices architecture application for AI backend API
 (choose one for every technology)
 
 ## Features
+TODO
 
 ## How to run projects
 ### Creating JAR file(main service)
