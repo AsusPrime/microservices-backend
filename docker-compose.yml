@@ -43,6 +43,20 @@ services:
       timeout: 5s
       retries: 5
 
+  telegram_bot:
+    image: telegram_bot:latest
+    build:
+      context: ./telegram_bot
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+    # volumes
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 
 volumes:
   rabbitmq_data:

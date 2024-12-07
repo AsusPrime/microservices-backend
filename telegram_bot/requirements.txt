@@ -1,0 +1,3 @@
+python-telegram-bot
+pika
+python-dotenv
