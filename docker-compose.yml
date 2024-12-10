@@ -42,6 +42,19 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  
+  ai:
+    image: ai:latest
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 
 volumes:

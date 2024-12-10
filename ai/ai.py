@@ -2,21 +2,24 @@ from cv2 import imread, resize
 from numpy import expand_dims
 from tensorflow.keras.saving import load_model
 import pyrebase
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 MODEL_FILE='model.keras'
 IMAGE_NAME='img.jpg'
-
-config = {
-    "apiKey": "AIzaSyCK8ViLcr36fvQoYxd2YM15bxazTUBWxmU",
-    "authDomain": "hand-gesture-recognition-test.firebaseapp.com",
-    "projectId": "hand-gesture-recognition-test",
-    "storageBucket": "hand-gesture-recognition-test.appspot.com",
-    "messagingSenderId": "859385448146",
-    "appId": "1:859385448146:web:ad4d2f80f15eb1ec24cf0b",
-    "measurementId": "G-5LN3KZY65L"
+CONFIG = {
+    "apiKey": os.getenv("FIREBASE_API_KEY"),
+    "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
+    "projectId": os.getenv("FIREBASE_PROJECT_ID"),
+    "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET"),
+    "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID"),
+    "appId": os.getenv("FIREBASE_APP_ID"),
+    "measurementId": os.getenv("FIREBASE_MEASUREMENT_ID"),
+    "databaseURL": os.getenv("FIREBASE_DATABASE_URL")
 }
 
-firebase = firebase.initialize_app(config)
+firebase = pyrebase.initialize_app(CONFIG)
 storage = firebase.storage()
 
 model = load_model(MODEL_FILE)
@@ -24,7 +27,7 @@ model = load_model(MODEL_FILE)
 
 # Functions
 def download_image(image_name):
-    storage.child(image_name).download(IMAGE_NAME)
+    storage.child(image_name).download('./', IMAGE_NAME)
 
 def get_processed_image():
     img = imread(IMAGE_NAME)
@@ -36,8 +39,15 @@ def predicate():
 
     return predicate[0][0]
 
+download_image(IMAGE_NAME)
+
+print("Succesfully downloaded")
 
 #TODO:
 # add rabbitqmq queue listener
 # change image of python in docker file form default to 
 #python with TF(also delete form requirements tf module)
+# USE PYTHON 3.12 AS IMAGE FOR DOCKER!!!
+
+# Change README file:
+# * .env file(config for pyrebase)
