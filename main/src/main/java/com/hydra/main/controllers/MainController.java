@@ -23,8 +23,6 @@ import java.util.Map;
 @RequestMapping(value = "/test")
 public class MainController {
     private final MessageSenderService messageSenderService;
-    private final String subject = "Example of subject";
-    private final String body = "Example of body";
 
     public MainController(MessageSenderService messageSenderService)
     {
@@ -41,18 +39,17 @@ public class MainController {
         }
 
         String email = (String) data.get("email");
-        String link = (String) data.get("link");
+        String image = (String) data.get("link");
 
-        if(email == null || link == null)
+        if(email == null || image == null)
         {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("status", "bad request", "message", "missing email or link"));
         }
 
         JSONObject message = new JSONObject();
-        message.put("To", email);
-        message.put("Subject", subject);
-        message.put("Body", body);
+        message.put("email", email);
+        message.put("image", image);
 
         //send data into process function
         //TODO:

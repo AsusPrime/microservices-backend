@@ -33,7 +33,7 @@ services:
       - main
     environment:
       - RABBITMQ_HOST=rabbitmq
-      - QUEUE_NAME=main # change for any queue you need
+      - QUEUE_NAME=mail
       - LOG_FILENAME=/app/logs/mail_serice.log
     volumes:
       - logs:/app/logs
@@ -50,6 +50,9 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - QUEUE_NAME=main
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
       interval: 5s

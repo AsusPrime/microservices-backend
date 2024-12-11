@@ -14,7 +14,7 @@ load_dotenv()
 SENDER = os.getenv("EMAIL")
 PASSWORD = os.getenv("PASSWORD")
 RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")
-QUEUE_NAME = os.getenv("QUEUE_NAME", "main")
+QUEUE_NAME = os.getenv("QUEUE_NAME", "mail")
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 LOG_HANDLERS = os.getenv("LOG_HANDLERS", ['file_handler', 'console_handler', 'rabbitmq_handler'])
@@ -63,24 +63,24 @@ def callback(ch, method, properties, message):
     lgr.debug('Confirming successfully sended message to RabbitMQ')
     ch.basic_ack(delivery_tag = method.delivery_tag)
 
-def main(rabbitmq_host, queue_name, callback):
+def main():
     for i in range(5):
-        channel = connect(rabbitmq_host)
+        channel = connect(RABBITMQ_HOST)
         
         if channel != None:
             break
         sleep(5)
 
     lgr.debug('Decalrating queue')
-    channel.queue_declare(queue=queue_name, durable=True)
+    channel.queue_declare(queue=QUEUE_NAME, durable=True)
     lgr.debug('Configuring connection between mail sercice and RabbitMQ queue')
     channel.basic_qos(prefetch_count=1)# will not sent more then 1 message to this service
     lgr.debug('Configuring callback for RabbitMQ queue')
-    channel.basic_consume(queue=queue_name, on_message_callback=callback)
+    channel.basic_consume(queue=QUEUE_NAME, on_message_callback=callback)
 
     lgr.info('Service successfullt started and waiting for new messages')
     channel.start_consuming()
 
 
 if __name__ == '__main__':
-    main(RABBITMQ_HOST, QUEUE_NAME, callback=callback)
+    main()

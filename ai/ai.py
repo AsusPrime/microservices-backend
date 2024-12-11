@@ -4,20 +4,28 @@ from tensorflow.keras.saving import load_model
 import pyrebase
 import os
 from dotenv import load_dotenv
+import pika
+from time import sleep
+import json
 
 load_dotenv()
 MODEL_FILE='model.keras'
 IMAGE_NAME='img.jpg'
+QUEUE_NAME = os.getenv("QUEUE_NAME", "main")
+RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "rabbitmq")
 CONFIG = {
-    "apiKey": os.getenv("FIREBASE_API_KEY"),
-    "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
-    "projectId": os.getenv("FIREBASE_PROJECT_ID"),
-    "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET"),
-    "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID"),
-    "appId": os.getenv("FIREBASE_APP_ID"),
-    "measurementId": os.getenv("FIREBASE_MEASUREMENT_ID"),
-    "databaseURL": os.getenv("FIREBASE_DATABASE_URL")
+    "apiKey": os.getenv("API_KEY"),
+    "authDomain": "hand-gesture-recognition-test.firebaseapp.com",
+    "projectId": "hand-gesture-recognition-test",
+    "storageBucket": "hand-gesture-recognition-test.appspot.com",
+    "messagingSenderId": "859385448146",
+    "appId": "1:859385448146:web:ad4d2f80f15eb1ec24cf0b",
+    "measurementId": "G-5LN3KZY65L",
+    "databaseURL": ""
 }
+
+SUBJECT = 'Subject example'
+
 
 firebase = pyrebase.initialize_app(CONFIG)
 storage = firebase.storage()
@@ -26,28 +34,93 @@ model = load_model(MODEL_FILE)
 
 
 # Functions
-def download_image(image_name):
-    storage.child(image_name).download('./', IMAGE_NAME)
+def download_image(cloud_image_name, local_image_name):
+    storage.child(cloud_image_name).download('./', local_image_name)
 
-def get_processed_image():
-    img = imread(IMAGE_NAME)
+def get_processed_image(fileName):
+    img = imread(fileName)
     img = resize(img, (32, 32))
     return img/255.0
 
-def predicate():
-    predicate = model.predict(expand_dims(get_processed_image, axis=0))
+def predicate(imageName):
+    predicate = model.predict(expand_dims(get_processed_image(imageName), axis=0))
 
     return predicate[0][0]
 
-download_image(IMAGE_NAME)
 
-print("Succesfully downloaded")
+connection = None
+channel = None
+
+def connect(host):
+    global connection
+    global channel
+    channel = None
+    try:
+        # lgr.debug(f'Connecting to {host}')
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host=host))
+        channel = connection.channel()
+    except Exception as e:
+        # lgr.error(f'Error connecting to {host}: {e.args}')
+        return None
+
+    # lgr.info(f'Successfully connected to {host}')
+    return channel
+
+def send_to_mail(message):
+    if(channel == None):
+        try:
+            for i in range(5):
+                channel = connect(RABBITMQ_HOST)
+                
+                if channel != None:
+                    break
+                sleep(5)
+        except:
+            print("error connection to RabbitMQ...")
+        
+    if(channel == None):
+        print("cannot connect ot RabbitMQ")
+        return False
+    
+    channel.basic_publish(message, RABBITMQ_HOST, properties=pika.BasicProperties(delivery_mode = pika.DeliveryMode.Persistent))
+
+def callback(ch, method, properties, message):
+
+    message_json = json.loads(message)
+
+    img = message_json['image']
+    download_image(img, IMAGE_NAME)
+
+    predict = predicate(IMAGE_NAME)
+
+    mail_dic = {'To': message_json['email'], 'Body': 'Your predict: ' + str(predict), 'Subject': SUBJECT}
+
+    send_to_mail(json.loads(mail_dic).dumps())
+    
+    ch.basic_ack(delivery_tag = method.delivery_tag)
+
+
+
+def main():
+    for i in range(5):
+        channel = connect(RABBITMQ_HOST)
+        
+        if channel != None:
+            break
+        sleep(5)
+
+    channel.queue_declare(queue=QUEUE_NAME, durable=True)
+    channel.basic_qos(prefetch_count=1)# will not sent more then 1 message to this service
+    channel.basic_consume(queue=QUEUE_NAME, on_message_callback=callback)
+
+    channel.start_consuming()
+
+if __name__ == '__main__':
+    main()
 
 #TODO:
-# add rabbitqmq queue listener
-# change image of python in docker file form default to 
-#python with TF(also delete form requirements tf module)
-# USE PYTHON 3.12 AS IMAGE FOR DOCKER!!!
+# Test rabbitmq connection
+# use python alphine image
 
 # Change README file:
-# * .env file(config for pyrebase)
+# Refactor queues in RabbitMQ
