@@ -11,7 +11,8 @@ import json
 load_dotenv()
 MODEL_FILE='model.keras'
 IMAGE_NAME='img.jpg'
-QUEUE_NAME = os.getenv("QUEUE_NAME", "main")
+QUEUE_NAME_RECEIVE = os.getenv("QUEUE_NAME_RECEIVE", "main")
+QUEUE_NAME_MAIL = os.getenv("QUEUE_NAME_MAIL", "mail")
 RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "rabbitmq")
 CONFIG = {
     "apiKey": os.getenv("API_KEY"),
@@ -67,6 +68,7 @@ def connect(host):
     return channel
 
 def send_to_mail(message):
+    global channel
     if(channel == None):
         try:
             for i in range(5):
@@ -82,7 +84,7 @@ def send_to_mail(message):
         print("cannot connect ot RabbitMQ")
         return False
     
-    channel.basic_publish(message, RABBITMQ_HOST, properties=pika.BasicProperties(delivery_mode = pika.DeliveryMode.Persistent))
+    channel.basic_publish('', QUEUE_NAME_MAIL, message, properties=pika.BasicProperties(delivery_mode = pika.DeliveryMode.Persistent))
 
 def callback(ch, method, properties, message):
 
@@ -95,7 +97,7 @@ def callback(ch, method, properties, message):
 
     mail_dic = {'To': message_json['email'], 'Body': 'Your predict: ' + str(predict), 'Subject': SUBJECT}
 
-    send_to_mail(json.loads(mail_dic).dumps())
+    send_to_mail(json.dumps(mail_dic))
     
     ch.basic_ack(delivery_tag = method.delivery_tag)
 
@@ -109,9 +111,11 @@ def main():
             break
         sleep(5)
 
-    channel.queue_declare(queue=QUEUE_NAME, durable=True)
+    channel.queue_declare(queue=QUEUE_NAME_RECEIVE, durable=True)
     channel.basic_qos(prefetch_count=1)# will not sent more then 1 message to this service
-    channel.basic_consume(queue=QUEUE_NAME, on_message_callback=callback)
+    channel.queue_declare(queue=QUEUE_NAME_MAIL, durable=True)
+    channel.basic_qos(prefetch_count=1)# will not sent more then 1 message to this service
+    channel.basic_consume(queue=QUEUE_NAME_RECEIVE, on_message_callback=callback)
 
     channel.start_consuming()
 
@@ -119,8 +123,5 @@ if __name__ == '__main__':
     main()
 
 #TODO:
-# Test rabbitmq connection
-# use python alphine image
-
-# Change README file:
-# Refactor queues in RabbitMQ
+# Change README file: add info about firebase
+# Add logger

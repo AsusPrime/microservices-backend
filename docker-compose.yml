@@ -52,7 +52,8 @@ services:
       - rabbitmq
     environment:
       - RABBITMQ_HOST=rabbitmq
-      - QUEUE_NAME=main
+      - QUEUE_NAME_RECEIVE=main
+      - QUEUE_NAME_MAIL=mail
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
       interval: 5s

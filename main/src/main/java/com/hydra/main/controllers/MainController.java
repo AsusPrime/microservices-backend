@@ -39,7 +39,7 @@ public class MainController {
         }
 
         String email = (String) data.get("email");
-        String image = (String) data.get("link");
+        String image = (String) data.get("image");
 
         if(email == null || image == null)
         {
