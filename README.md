@@ -64,6 +64,12 @@ For this project we are using Firebase as a DB where we store images from users
 
 To create your own database and use it in this project, watch the video at [this link](https://www.youtube.com/watch?v=c7OCGzJ_8aU)
 
+* Then you need to create an .env file and insert following text:
+```
+API_KEY=
+```
+* And after '=' insert your API_KEY from Firebase
+
 ### Start project
 After that, you finaly can start project
 
