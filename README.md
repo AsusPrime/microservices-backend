@@ -59,6 +59,11 @@ PASSWORD=""
 
 3. Inside double quotes(") write your authorization data
 
+### Configure Firebase
+For this project we are using Firebase as a DB where we store images from users
+
+To create your own database and use it in this project, watch the video at [this link](https://www.youtube.com/watch?v=c7OCGzJ_8aU)
+
 ### Start project
 After that, you finaly can start project
 
